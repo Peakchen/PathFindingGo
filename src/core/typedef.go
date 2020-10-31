@@ -16,3 +16,11 @@ type ArrayUInt64 []uint64
 const (
 	SQRT2 = 1.4142135623730951
 )
+
+type Opt struct {
+	AllowDiagonal    bool
+	DontCrossCorners bool
+	DiagonalMovement DiagonalMovement
+	Heuristic        func(x, y int32) int32
+	Weight           int32
+}

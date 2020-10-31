@@ -13,7 +13,7 @@ import "math"
  * @param {number} dy - Difference in y.
  * @return {number} dx + dy
  */
-func manhattan(dx, dy int32) int32 {
+func Manhattan(dx, dy int32) int32 {
 	return dx + dy
 }
 
@@ -23,7 +23,7 @@ func manhattan(dx, dy int32) int32 {
  * @param {number} dy - Difference in y.
  * @return {number} sqrt(dx * dx + dy * dy)
  */
-func euclidean(dx, dy int32) int32 {
+func Euclidean(dx, dy int32) int32 {
 	return int32(math.Ceil(math.Sqrt(float64(dx*dx + dy*dy))))
 }
 
@@ -33,12 +33,12 @@ func euclidean(dx, dy int32) int32 {
  * @param {number} dy - Difference in y.
  * @return {number} sqrt(dx * dx + dy * dy) for grids
  */
-func octile(dx, dy int32) float64 {
+func Octile(dx, dy int32) int32 {
 	var F = SQRT2 - float64(1)
 	if dx < dy {
-		return (F*float64(dx) + float64(dy))
+		return int32(math.Ceil((F*float64(dx) + float64(dy))))
 	}
-	return (F*float64(dy) + float64(dx))
+	return int32(math.Ceil((F*float64(dy) + float64(dx))))
 }
 
 /**
@@ -47,6 +47,6 @@ func octile(dx, dy int32) float64 {
  * @param {number} dy - Difference in y.
  * @return {number} max(dx, dy)
  */
-func chebyshev(dx, dy int32) int32 {
+func Chebyshev(dx, dy int32) int32 {
 	return int32(math.Max(float64(dx), float64(dy)))
 }

@@ -9,17 +9,21 @@ type DoubleNode [][]*TNode
 type ArrayNode []*TNode
 
 type TNode struct {
-	x        int32
-	y        int32
-	walkable bool
-	parent   *TNode
+	X        int32
+	Y        int32
+	Walkable bool
+	Parent   *TNode
 }
 
-func Node(x int32, y int32, walkable bool) *TNode {
+func Node(x int32, y int32, Walkable bool) *TNode {
 	return &TNode{
-		x:        x,
-		y:        y,
-		walkable: walkable,
-		parent:   nil,
+		X:        x,
+		Y:        y,
+		Walkable: Walkable,
+		Parent:   nil,
 	}
+}
+
+func (this *TNode) IsEqual(node *TNode) bool {
+	return this.X == node.X && this.Y == node.Y && this.Walkable == node.Walkable
 }

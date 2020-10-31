@@ -8,16 +8,16 @@ package core
 import "math"
 
 /**
- * Backtrace according to the parent records and return the path.
+ * Backtrace according to the Parent records and return the path.
  * (including both start and end nodes)
  * @param {Node} node End node
  * @return {DoubleInt32} the path
  */
-func backtrace(node *TNode) DoubleInt32 {
-	var path = DoubleInt32{ArrayInt32{node.x, node.y}}
-	for node.parent != nil {
-		node = node.parent
-		path = append(path, ArrayInt32{node.x, node.y})
+func Backtrace(node *TNode) DoubleInt32 {
+	var path = DoubleInt32{ArrayInt32{node.X, node.Y}}
+	for node.Parent != nil {
+		node = node.Parent
+		path = append(path, ArrayInt32{node.X, node.Y})
 	}
 	Reverse(path)
 	return path
@@ -30,8 +30,8 @@ func backtrace(node *TNode) DoubleInt32 {
  * @param {Node}
  */
 func biBacktrace(nodeA, nodeB *TNode) DoubleInt32 {
-	pathA := backtrace(nodeA)
-	pathB := backtrace(nodeB)
+	pathA := Backtrace(nodeA)
+	pathB := Backtrace(nodeB)
 	Reverse(pathB)
 	pathA = append(pathA, pathB...)
 	return pathA
@@ -60,10 +60,10 @@ func pathLength(path DoubleInt32) int {
  * Given the start and end coordinates, return all the coordinates lying
  * on the line formed by these coordinates, based on Bresenham's algorithm.
  * http://en.wikipedia.org/wiki/Bresenham's_line_algorithm#Simplification
- * @param {number} x0 Start x coordinate
- * @param {number} y0 Start y coordinate
- * @param {number} x1 End x coordinate
- * @param {number} y1 End y coordinate
+ * @param {number} x0 Start X coordinate
+ * @param {number} y0 Start Y coordinate
+ * @param {number} x1 End X coordinate
+ * @param {number} y1 End Y coordinate
  * @return {DoubleInt32} The coordinates on the line
  */
 func interpolate(x0, y0, x1, y1 int32) DoubleInt32 {
@@ -152,10 +152,10 @@ func expandPath(path DoubleInt32) DoubleInt32 {
 
 func smoothenPath(grid *TGrid, path DoubleInt32) DoubleInt32 {
 	var pathlen = len(path)
-	var x0 = path[0][0]         // path start x
-	var y0 = path[0][1]         // path start y
-	var x1 = path[pathlen-1][0] // path end x
-	var y1 = path[pathlen-1][1] // path end y
+	var x0 = path[0][0]         // path start X
+	var y0 = path[0][1]         // path start Y
+	var x1 = path[pathlen-1][0] // path end X
+	var y1 = path[pathlen-1][1] // path end Y
 	var sx, sy int32            // current start coordinate
 	var ex, ey int32            // current end coordinate
 	var newPath, line DoubleInt32
@@ -212,10 +212,10 @@ func compressPath(path DoubleInt32) DoubleInt32 {
 
 	var (
 		compressed = DoubleInt32{}
-		sx         = path[0][0] // start x
-		sy         = path[0][1] // start y
-		px         = path[1][0] // second point x
-		py         = path[1][1] // second point y
+		sx         = path[0][0] // start X
+		sy         = path[0][1] // start Y
+		px         = path[1][0] // second point X
+		py         = path[1][1] // second point Y
 		dx         = px - sx    // direction between the two points
 		dy         = py - sy    // direction between the two points
 		lx, ly     int32

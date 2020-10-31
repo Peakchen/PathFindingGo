@@ -16,8 +16,8 @@ type TGrid struct {
  * @param {number} width Number of columns of the grid, or matrix
  * @param {number} height Number of rows of the grid.
  * @param {Doubleint32} [matrix] - A 0-1 matrix
- *     representing the walkable status of the nodes(0 or false for walkable).
- *     If the matrix is not supplied, all the nodes will be walkable.  */
+ *     representing the Walkable status of the nodes(0 or false for Walkable).
+ *     If the matrix is not supplied, all the nodes will be Walkable.  */
 
 func Grid(width, height int, matrix DoubleInt32) *TGrid {
 	return &TGrid{
@@ -33,7 +33,7 @@ func Grid(width, height int, matrix DoubleInt32) *TGrid {
  * @param {number} width
  * @param {number} height
  * @param {DoubleNode} [matrix] - A 0-1 matrix representing
- *     the walkable status of the nodes.
+ *     the Walkable status of the nodes.
  * @see Grid
  */
 
@@ -61,28 +61,28 @@ func buildNodes(width, height int, matrix DoubleInt32) DoubleNode {
 			if nodes[i][j] == nil {
 				panic("invalid node.")
 			}
-			// 0, false, null will be walkable
-			// while others will be un-walkable
-			nodes[i][j].walkable = false
+			// 0, false, null will be Walkable
+			// while others will be un-Walkable
+			nodes[i][j].Walkable = false
 		}
 	}
 
 	return nodes
 }
 
-func (this *TGrid) getNodeAt(x, y int) *TNode {
+func (this *TGrid) GetNodeAt(x, y int) *TNode {
 	return this.nodes[y][x]
 }
 
 /**
- * Determine whether the node at the given position is walkable.
+ * Determine whether the node at the given position is Walkable.
  * (Also returns false if the position is outside the grid.)
  * @param {number} x - The x coordinate of the node.
  * @param {number} y - The y coordinate of the node.
  * @return {boolean} - The walkability of the node.
  */
 func (this *TGrid) IsWalkableAt(x, y int) bool {
-	return this.isInside(x, y) && this.nodes[y][x].walkable
+	return this.isInside(x, y) && this.nodes[y][x].Walkable
 }
 
 /**
@@ -99,14 +99,14 @@ func (this *TGrid) isInside(x, y int) bool {
 }
 
 /**
- * Set whether the node on the given position is walkable.
+ * Set whether the node on the given position is Walkable.
  * NOTE: throws exception if the coordinate is not inside the grid.
  * @param {number} x - The x coordinate of the node.
  * @param {number} y - The y coordinate of the node.
- * @param {boolean} walkable - Whether the position is walkable.
+ * @param {boolean} Walkable - Whether the position is Walkable.
  */
-func (this *TGrid) setWalkableAt(x, y int32, walkable bool) {
-	this.nodes[y][x].walkable = walkable
+func (this *TGrid) setWalkableAt(x, y int32, Walkable bool) {
+	this.nodes[y][x].Walkable = Walkable
 }
 
 /**
@@ -127,9 +127,9 @@ func (this *TGrid) setWalkableAt(x, y int32, walkable bool) {
  * @param {Node} node
  * @param {DiagonalMovement} diagonalMovement
  */
-func (this *TGrid) getNeighbors(node *TNode, move DiagonalMovement) ArrayNode {
-	var x = int(node.x)
-	var y = int(node.y)
+func (this *TGrid) GetNeighbors(node *TNode, move DiagonalMovement) ArrayNode {
+	var x = int(node.X)
+	var y = int(node.Y)
 	var neighbors = ArrayNode{}
 	var (
 		s0    = false
@@ -223,7 +223,7 @@ func (this *TGrid) clone() *TGrid {
 	for i = 0; i < height; i++ {
 		newNodes[i] = make(ArrayNode, width)
 		for j = 0; j < width; j++ {
-			newNodes[i][j] = Node(int32(j), int32(i), thisNodes[i][j].walkable)
+			newNodes[i][j] = Node(int32(j), int32(i), thisNodes[i][j].Walkable)
 		}
 	}
 
