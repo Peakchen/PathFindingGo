@@ -4,4 +4,4 @@
 
 ==============
 #### create by stefan @copyright ####
-#### for Path Finding methods by golang (from [PathFinding.js](https://github.com/qiao/PathFinding.js))
+#### for Path Finding methods by golang (base upon [PathFinding.js](https://github.com/qiao/PathFinding.js))

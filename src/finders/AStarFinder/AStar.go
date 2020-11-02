@@ -1,5 +1,10 @@
 package AStarFinder
 
+/*
+	by stefan 2572915286@qq.com
+	Based upon https://github.com/qiao/PathFinding.js
+*/
+
 import (
 	"go-PathFinding/core"
 	"math"

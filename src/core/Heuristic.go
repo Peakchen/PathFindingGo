@@ -4,7 +4,7 @@ import "math"
 
 /*
 	by stefan 2572915286@qq.com
-	from https://github.com/qiao/PathFinding.js
+	Based upon  https://github.com/qiao/PathFinding.js
 */
 
 /**

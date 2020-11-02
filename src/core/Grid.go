@@ -4,6 +4,11 @@ import (
 	"github.com/Peakchen/xgameCommon/akLog"
 )
 
+/*
+	by stefan 2572915286@qq.com
+	Based upon https://github.com/qiao/PathFinding.js
+*/
+
 type TGrid struct {
 	width  int
 	height int

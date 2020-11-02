@@ -1,5 +1,10 @@
 package core
 
+/*
+	by stefan 2572915286@qq.com
+	Based upon https://github.com/qiao/PathFinding.js
+*/
+
 type DoubleInt32 [][]int32
 type DoubleInt64 [][]int64
 

@@ -5,6 +5,11 @@ import (
 	"sort"
 )
 
+/*
+	by stefan 2572915286@qq.com
+	Based upon https://github.com/qiao/PathFinding.js
+*/
+
 type GridHeap struct {
 	grids []*AStarGrid
 }
