@@ -29,8 +29,8 @@ type TAStarFinder struct {
  *     suboptimal paths, in order to speed up the search.
  */
 
-func CreateAStarFinder(opt *core.Opt) {
-	this := &TAStarFinder{
+func CreateAStarFinder(opt *core.Opt) (this *TAStarFinder) {
+	this = &TAStarFinder{
 		FinderOpt: opt,
 	}
 	if opt.Heuristic == nil {
@@ -63,6 +63,7 @@ func CreateAStarFinder(opt *core.Opt) {
 			this.FinderOpt.Heuristic = core.Octile
 		}
 	}
+	return
 }
 
 /**
