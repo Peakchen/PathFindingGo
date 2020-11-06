@@ -1,6 +1,9 @@
 package core
 
-import "reflect"
+import (
+	"reflect"
+	"strconv"
+)
 
 /*
 
@@ -73,4 +76,8 @@ func Reverse(nodes interface{}) {
 		panic("invalid data type.")
 	}
 
+}
+
+func NodeGroupStr(x, y int32) string {
+	return strconv.Itoa(int(x)) + strconv.Itoa(int(y))
 }

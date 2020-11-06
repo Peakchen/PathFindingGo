@@ -63,12 +63,9 @@ func buildNodes(width, height int, matrix DoubleInt32) DoubleNode {
 
 	for i := 0; i < height; i++ {
 		for j := 0; j < width; j++ {
-			if nodes[i][j] == nil {
-				panic("invalid node.")
-			}
 			// 0, false, null will be Walkable
 			// while others will be un-Walkable
-			nodes[i][j].Walkable = false
+			nodes[i][j].Walkable = matrix[i][j] == 0
 		}
 	}
 

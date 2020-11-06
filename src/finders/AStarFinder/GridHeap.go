@@ -37,7 +37,7 @@ func (this *GridHeap) autoSort() {
 
 func (this *GridHeap) Push(new *AStarGrid) {
 	this.grids = append(this.grids, new)
-	this.autoSort()
+	//this.autoSort()
 }
 
 func (this *GridHeap) Pop() (grid *AStarGrid) {

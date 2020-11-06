@@ -88,8 +88,8 @@ func (this *TAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.TG
 	diagonalMovement := this.FinderOpt.DiagonalMovement
 	weight := this.FinderOpt.Weight
 
-	var node, neighbor *AStarGrid
-	var neighbors core.ArrayNode
+	// var node, neighbor *AStarGrid
+	// var neighbors core.ArrayNode
 	//var i, l int
 	var x, y int32
 	var ng float64
@@ -102,11 +102,15 @@ func (this *TAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.TG
 	openList.Push(startNode)
 	startNode.opened = true
 
+	// record walked positions
+	var walkedMap = map[string]bool{}
+
 	// while the open list is not empty
 	for !openList.Empty() {
 		// pop the position of node which has the minimum `f` value.
-		node = openList.Pop()
+		node := openList.Pop()
 		node.closed = true
+		walkedMap[core.NodeGroupStr(node.X, node.Y)] = true
 
 		// if reached the end position, construct the path and return it
 		if node.IsEqual(endNode) {
@@ -114,9 +118,13 @@ func (this *TAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.TG
 		}
 
 		// get neigbours of the current node
-		neighbors = grid.GetNeighbors(node.TNode, diagonalMovement)
+		neighbors := grid.GetNeighbors(node.TNode, diagonalMovement)
 		for i := 0; i < len(neighbors); i++ {
-			neighbor = &AStarGrid{
+			if walkedMap[core.NodeGroupStr(neighbors[i].X, neighbors[i].Y)] {
+				continue
+			}
+
+			neighbor := &AStarGrid{
 				TNode:  neighbors[i],
 				f:      0.0,
 				g:      0.0,
