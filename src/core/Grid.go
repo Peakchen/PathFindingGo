@@ -15,6 +15,10 @@ type TGrid struct {
 	nodes  DoubleNode
 }
 
+const (
+	allWalked = bool(false)
+)
+
 /**
  * The Grid class, which serves as the encapsulation of the layout of the nodes.
  * @constructor
@@ -64,8 +68,13 @@ func buildNodes(width, height int, matrix DoubleInt32) DoubleNode {
 	for i := 0; i < height; i++ {
 		for j := 0; j < width; j++ {
 			// 0, false, null will be Walkable
-			// while others will be un-Walkable
-			nodes[i][j].Walkable = matrix[i][j] == 0
+			// while others will be un-walkable
+			if !allWalked {
+				// rule for yourself（...）
+				nodes[i][j].Walkable = matrix[i][j] == 0
+			} else {
+				nodes[i][j].Walkable = allWalked
+			}
 		}
 	}
 
