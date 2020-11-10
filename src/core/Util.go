@@ -29,7 +29,7 @@ func Backtrace(node *TNode) DoubleInt32 {
  * @param {Node}
  * @param {Node}
  */
-func biBacktrace(nodeA, nodeB *TNode) DoubleInt32 {
+func BiBacktrace(nodeA, nodeB *TNode) DoubleInt32 {
 	pathA := Backtrace(nodeA)
 	pathB := Backtrace(nodeB)
 	Reverse(pathB)
@@ -42,7 +42,7 @@ func biBacktrace(nodeA, nodeB *TNode) DoubleInt32 {
  * @param {Array<Array<number>>} path The path
  * @return {number} The length of the path
  */
-func pathLength(path DoubleInt32) int {
+func PathLength(path DoubleInt32) int {
 	var i, sum int
 	var a, b ArrayInt32
 	var dx, dy int32

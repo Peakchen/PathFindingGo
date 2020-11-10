@@ -1,7 +1,6 @@
-package AStarFinder
+package core
 
 import (
-	"go-PathFinding/core"
 	"sort"
 )
 
@@ -15,12 +14,13 @@ type GridHeap struct {
 }
 
 type AStarGrid struct {
-	*core.TNode
-	f      float64
-	g      float64
-	h      int32
-	opened bool
-	closed bool
+	*TNode
+	F          float64
+	G          float64
+	H          int32
+	Opened     bool
+	Closed     bool
+	Openedflag int // another opened used
 }
 
 func NewGridHeap() *GridHeap {
@@ -31,7 +31,7 @@ func NewGridHeap() *GridHeap {
 
 func (this *GridHeap) autoSort() {
 	sort.Slice(this.grids, func(i, j int) bool {
-		return this.grids[i].f < this.grids[j].f
+		return this.grids[i].F < this.grids[j].F
 	})
 }
 

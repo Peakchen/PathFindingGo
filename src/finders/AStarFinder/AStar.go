@@ -15,19 +15,20 @@ type TAStarFinder struct {
 }
 
 /**
- * A* path-finder. Based upon https://github.com/bgrins/javascript-astar
- * @constructor
- * @param {Object} opt
- * @param {boolean} opt.allowDiagonal Whether diagonal movement is allowed.
- *     Deprecated, use diagonalMovement instead.
- * @param {boolean} opt.dontCrossCorners Disallow diagonal movement touching
- *     block corners. Deprecated, use diagonalMovement instead.
- * @param {DiagonalMovement} opt.diagonalMovement Allowed diagonal movement.
- * @param {function} opt.heuristic Heuristic function to estimate the distance
- *     (defaults to manhattan).
- * @param {number} opt.weight Weight to apply to the heuristic to allow for
- *     suboptimal paths, in order to speed up the search.
- */
+* A* path-finder.
+  Based upon https://github.com/bgrins/javascript-astar
+* @constructor
+* @param {Object} opt
+* @param {boolean} opt.allowDiagonal Whether diagonal movement is allowed.
+*     Deprecated, use diagonalMovement instead.
+* @param {boolean} opt.dontCrossCorners Disallow diagonal movement touching
+*     block corners. Deprecated, use diagonalMovement instead.
+* @param {DiagonalMovement} opt.diagonalMovement Allowed diagonal movement.
+* @param {function} opt.heuristic Heuristic function to estimate the distance
+*     (defaults to manhattan).
+* @param {number} opt.weight Weight to apply to the heuristic to allow for
+*     suboptimal paths, in order to speed up the search.
+*/
 
 func CreateAStarFinder(opt *core.Opt) (this *TAStarFinder) {
 	this = &TAStarFinder{
@@ -74,33 +75,33 @@ func CreateAStarFinder(opt *core.Opt) (this *TAStarFinder) {
 func (this *TAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.TGrid) core.DoubleInt32 {
 	var path = core.DoubleInt32{}
 
-	var openList = NewGridHeap()
-	var startNode = &AStarGrid{
+	var openList = core.NewGridHeap()
+	var startNode = &core.AStarGrid{
 		TNode:  grid.GetNodeAt(startX, startY),
-		f:      0.0,
-		g:      0.0,
-		h:      0,
-		opened: false,
-		closed: false,
+		F:      0.0,
+		G:      0.0,
+		H:      0,
+		Opened: false,
+		Closed: false,
 	}
 	endNode := grid.GetNodeAt(endX, endY)
 	heuristic := this.FinderOpt.Heuristic
 	diagonalMovement := this.FinderOpt.DiagonalMovement
 	weight := this.FinderOpt.Weight
 
-	// var node, neighbor *AStarGrid
+	// var node, neighbor *core.AStarGrid
 	// var neighbors core.ArrayNode
 	//var i, l int
 	var x, y int32
 	var ng float64
 
 	// set the `g` and `f` value of the start node to be 0
-	startNode.g = 0.0
-	startNode.f = 0.0
+	startNode.G = 0.0
+	startNode.F = 0.0
 
 	// push the start node into the open list
 	openList.Push(startNode)
-	startNode.opened = true
+	startNode.Opened = true
 
 	// record walked positions
 	var walkedMap = map[string]bool{}
@@ -109,7 +110,7 @@ func (this *TAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.TG
 	for !openList.Empty() {
 		// pop the position of node which has the minimum `f` value.
 		node := openList.Pop()
-		node.closed = true
+		node.Closed = true
 		walkedMap[core.NodeGroupStr(node.X, node.Y)] = true
 
 		// if reached the end position, construct the path and return it
@@ -124,16 +125,16 @@ func (this *TAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.TG
 				continue
 			}
 
-			neighbor := &AStarGrid{
+			neighbor := &core.AStarGrid{
 				TNode:  neighbors[i],
-				f:      0.0,
-				g:      0.0,
-				h:      0,
-				opened: false,
-				closed: false,
+				F:      0.0,
+				G:      0.0,
+				H:      0,
+				Opened: false,
+				Closed: false,
 			}
 
-			if neighbor.closed {
+			if neighbor.Closed {
 				continue
 			}
 
@@ -143,24 +144,24 @@ func (this *TAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.TG
 			// get the distance between current node and the neighbor
 			// and calculate the next g score
 			if x-node.X == 0 || y-node.Y == 0 {
-				ng = node.g + float64(1)
+				ng = node.G + float64(1)
 			} else {
-				ng = node.g + core.SQRT2
+				ng = node.G + core.SQRT2
 			}
 
 			// check if the neighbor has not been inspected yet, or
 			// can be reached with smaller cost from the current node
-			if !neighbor.opened || ng < neighbor.g {
-				neighbor.g = ng
-				if neighbor.h == 0 {
-					neighbor.h = weight * heuristic(int32(math.Abs(float64(x-int32(endX)))), int32(math.Abs(float64((y-int32(endY))))))
+			if !neighbor.Opened || ng < neighbor.G {
+				neighbor.G = ng
+				if neighbor.H == 0 {
+					neighbor.H = weight * heuristic(int32(math.Abs(float64(x-int32(endX)))), int32(math.Abs(float64((y-int32(endY))))))
 				}
-				neighbor.f = neighbor.g + float64(neighbor.h)
+				neighbor.F = neighbor.G + float64(neighbor.H)
 				neighbor.Parent = node.TNode
 
-				if !neighbor.opened {
+				if !neighbor.Opened {
 					openList.Push(neighbor)
-					neighbor.opened = true
+					neighbor.Opened = true
 				} else {
 					// the neighbor can be reached with smaller cost.
 					// Since its f value has been updated, we have to

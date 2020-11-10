@@ -1,4 +1,4 @@
-package AStarFinder
+package BiAStarFinder
 
 import (
 	"go-PathFinding/core"
@@ -9,8 +9,8 @@ import (
 	"github.com/Peakchen/xgameCommon/akLog"
 )
 
-func TestAStarFinder(t *testing.T) {
-	akLog.FmtPrintln("begin AStarFinder test...")
+func TestBiAStarFinder(t *testing.T) {
+	akLog.FmtPrintln("begin BiAStarFinder test...")
 	now := time.Now()
 	for _, item := range config.PathData {
 		itemnow := time.Now()
@@ -22,7 +22,7 @@ func TestAStarFinder(t *testing.T) {
 			Heuristic:        nil,
 			Weight:           0,
 		}
-		finder := CreateAStarFinder(opt)
+		finder := CreateBiAStarFinder(opt)
 		result := finder.FindPath(item.StartX, item.StartY, item.EndX, item.EndY, grid)
 		akLog.FmtPrintln("result: ", result, "\n", float64(time.Since(itemnow).Nanoseconds())/float64(1e9))
 	}
