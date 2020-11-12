@@ -51,7 +51,7 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 	}
 
 	var endNode = &core.AStarGrid{
-		TNode:  grid.GetNodeAt(startX, startY),
+		TNode:  grid.GetNodeAt(endX, endY),
 		F:      0.0,
 		G:      0.0,
 		H:      0,
@@ -82,7 +82,31 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 	endNode.Openedflag = BY_END
 
 	// record walked positions
-	var walkedMap = map[string]bool{}
+	var walkedMap = map[string]*core.AStarGrid{}
+
+	//check produce repeat parent.
+	checkNodeParentSame := func(src, dst *core.TNode) bool {
+		srcParent := src.Parent
+		for srcParent != nil {
+			if core.NodeGroupStr(src.Parent.X, src.Parent.Y) == core.NodeGroupStr(dst.X, dst.Y) {
+				return true
+			}
+			srcParent = srcParent.Parent
+		}
+		return false
+	}
+
+	//check and sort path right.
+	sortPathOrder := func(src, dst *core.TNode) core.DoubleInt32 {
+		result := core.BiBacktrace(src, dst)
+		fistCoord := core.Array2Coordinate(result[0])
+		lastCoord := core.Array2Coordinate(result[len(result)-1])
+		if (fistCoord.X != startNode.TNode.X && fistCoord.Y != startNode.TNode.Y) ||
+			(lastCoord.X != endNode.TNode.X && lastCoord.Y != endNode.TNode.Y) {
+			core.Reverse(result)
+		}
+		return result
+	}
 
 	// while both the open lists are not empty
 	for !startOpenList.Empty() && !endOpenList.Empty() {
@@ -91,15 +115,16 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 		node := startOpenList.Pop()
 		node.Closed = false
 
-		walkedMap[core.NodeGroupStr(node.X, node.Y)] = true
+		walkedMap[core.NodeGroupStr(node.X, node.Y)] = node
 
 		// get neigbours of the current node
 		neighbors := grid.GetNeighbors(node.TNode, diagonalMovement)
 		for i := 0; i < len(neighbors); i++ {
-			if walkedMap[core.NodeGroupStr(neighbors[i].X, neighbors[i].Y)] {
+			if checkNodeParentSame(node.TNode, neighbors[i]) {
 				continue
 			}
 
+			walkedNode := walkedMap[core.NodeGroupStr(neighbors[i].X, neighbors[i].Y)]
 			neighbor := &core.AStarGrid{
 				TNode:  neighbors[i],
 				F:      0.0,
@@ -109,12 +134,16 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 				Closed: false,
 			}
 
-			if neighbor.Closed {
-				continue
+			if walkedNode != nil {
+				neighbor = walkedNode
 			}
 
 			if neighbor.Openedflag == BY_END {
-				return core.BiBacktrace(node.TNode, neighbor.TNode)
+				return sortPathOrder(node.TNode, neighbor.TNode)
+			}
+
+			if neighbor.Closed {
+				continue
 			}
 
 			x := neighbor.X
@@ -136,7 +165,10 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 					neighbor.H = weight * heuristic(int32(math.Abs(float64(x-int32(endX)))), int32(math.Abs(float64((y-int32(endY))))))
 				}
 				neighbor.F = neighbor.G + float64(neighbor.H)
-				neighbor.Parent = node.TNode
+
+				if neighbor.Parent == nil {
+					neighbor.Parent = node.TNode
+				}
 
 				if !neighbor.Opened {
 					startOpenList.Push(neighbor)
@@ -154,13 +186,16 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 		node = endOpenList.Pop()
 		node.Closed = true
 
+		walkedMap[core.NodeGroupStr(node.X, node.Y)] = node
+
 		// get neigbours of the current node
 		neighbors = grid.GetNeighbors(node.TNode, diagonalMovement)
 		for i := 0; i < len(neighbors); i++ {
-			if walkedMap[core.NodeGroupStr(neighbors[i].X, neighbors[i].Y)] {
+			if checkNodeParentSame(node.TNode, neighbors[i]) {
 				continue
 			}
 
+			walkedNode := walkedMap[core.NodeGroupStr(neighbors[i].X, neighbors[i].Y)]
 			neighbor := &core.AStarGrid{
 				TNode:  neighbors[i],
 				F:      0.0,
@@ -170,12 +205,16 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 				Closed: false,
 			}
 
-			if neighbor.Closed {
-				continue
+			if walkedNode != nil {
+				neighbor = walkedNode
 			}
 
 			if neighbor.Openedflag == BY_START {
-				return core.BiBacktrace(node.TNode, neighbor.TNode)
+				return sortPathOrder(node.TNode, neighbor.TNode)
+			}
+
+			if neighbor.Closed {
+				continue
 			}
 
 			x := neighbor.X
@@ -197,7 +236,10 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 					neighbor.H = weight * heuristic(int32(math.Abs(float64(x-int32(endX)))), int32(math.Abs(float64((y-int32(endY))))))
 				}
 				neighbor.F = neighbor.G + float64(neighbor.H)
-				neighbor.Parent = node.TNode
+
+				if neighbor.Parent == nil {
+					neighbor.Parent = node.TNode
+				}
 
 				if neighbor.Openedflag == 0 {
 					endOpenList.Push(neighbor)

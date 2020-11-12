@@ -81,3 +81,10 @@ func Reverse(nodes interface{}) {
 func NodeGroupStr(x, y int32) string {
 	return strconv.Itoa(int(x)) + strconv.Itoa(int(y))
 }
+
+func Array2Coordinate(data ArrayInt32) *Coordinate {
+	return &Coordinate{
+		X: data[0],
+		Y: data[1],
+	}
+}

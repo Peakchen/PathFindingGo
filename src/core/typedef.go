@@ -29,3 +29,12 @@ type Opt struct {
 	Heuristic        func(x, y int32) int32
 	Weight           int32
 }
+
+type Coordinate struct {
+	X int32
+	Y int32
+}
+
+func (this *Coordinate) IsEqual(dst *Coordinate) bool {
+	return this.X == dst.X && this.Y == dst.Y
+}
