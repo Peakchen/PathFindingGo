@@ -1,5 +1,10 @@
 package BiAStarFinder
 
+/*
+	by stefan 2572915286@qq.com
+	Based upon https://github.com/qiao/PathFinding.js
+*/
+
 import (
 	"go-PathFinding/core"
 	"go-PathFinding/finders/AStarFinder"
@@ -101,19 +106,40 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 		result := core.BiBacktrace(src, dst)
 		fistCoord := core.Array2Coordinate(result[0])
 		lastCoord := core.Array2Coordinate(result[len(result)-1])
-		if (fistCoord.X != startNode.TNode.X && fistCoord.Y != startNode.TNode.Y) ||
+		if (fistCoord.X != startNode.TNode.X && fistCoord.Y != startNode.TNode.Y) &&
 			(lastCoord.X != endNode.TNode.X && lastCoord.Y != endNode.TNode.Y) {
 			core.Reverse(result)
+		} else if !(fistCoord.X == startNode.TNode.X && fistCoord.Y == startNode.TNode.Y &&
+			lastCoord.X == endNode.TNode.X && lastCoord.Y == endNode.TNode.Y) {
+			if fistCoord.X == lastCoord.X && fistCoord.Y == lastCoord.Y &&
+				(startOpenList.Empty() || endOpenList.Empty()) {
+				result = result[:len(result)-1]
+			} else {
+				result = nil
+			}
 		}
 		return result
 	}
 
-	// while both the open lists are not empty
-	for !startOpenList.Empty() && !endOpenList.Empty() {
+	//check parent find end node.
+	isLinkEndNode := func(node *core.TNode) bool {
+		if node.Parent == nil {
+			return false
+		}
+		return node.Parent.IsEqual(startNode.TNode) && node.IsEqual(endNode.TNode)
+	}
 
+	getPathNodes := func(list *core.GridHeap, endflag int, openflag int) core.DoubleInt32 {
 		// pop the position of start node which has the minimum `f` value.
-		node := startOpenList.Pop()
+		node := list.Pop()
 		node.Closed = false
+
+		// for short distance path find.
+		if isLinkEndNode(node.TNode) {
+			return core.DoubleInt32{
+				core.ArrayInt32{startNode.X, startNode.Y},
+				core.ArrayInt32{endNode.X, endNode.Y}}
+		}
 
 		walkedMap[core.NodeGroupStr(node.X, node.Y)] = node
 
@@ -124,7 +150,6 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 				continue
 			}
 
-			walkedNode := walkedMap[core.NodeGroupStr(neighbors[i].X, neighbors[i].Y)]
 			neighbor := &core.AStarGrid{
 				TNode:  neighbors[i],
 				F:      0.0,
@@ -134,82 +159,12 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 				Closed: false,
 			}
 
-			if walkedNode != nil {
-				neighbor = walkedNode
-			}
-
-			if neighbor.Openedflag == BY_END {
-				return sortPathOrder(node.TNode, neighbor.TNode)
-			}
-
-			if neighbor.Closed {
-				continue
-			}
-
-			x := neighbor.X
-			y := neighbor.Y
-
-			// get the distance between current node and the neighbor
-			// and calculate the next g score
-			if x-node.X == 0 || y-node.Y == 0 {
-				ng = node.G + float64(1)
-			} else {
-				ng = node.G + core.SQRT2
-			}
-
-			// check if the neighbor has not been inspected yet, or
-			// can be reached with smaller cost from the current node
-			if !neighbor.Opened || ng < neighbor.G {
-				neighbor.G = ng
-				if neighbor.H == 0 {
-					neighbor.H = weight * heuristic(int32(math.Abs(float64(x-int32(endX)))), int32(math.Abs(float64((y-int32(endY))))))
-				}
-				neighbor.F = neighbor.G + float64(neighbor.H)
-
-				if neighbor.Parent == nil {
-					neighbor.Parent = node.TNode
-				}
-
-				if !neighbor.Opened {
-					startOpenList.Push(neighbor)
-					neighbor.Openedflag = BY_START
-				} else {
-					// the neighbor can be reached with smaller cost.
-					// Since its f value has been updated, we have to
-					// update its position in the open list
-					startOpenList.UpdateItem(neighbor)
-				}
-			}
-		} // end for each neighbor
-
-		// pop the position of end node which has the minimum `f` value.
-		node = endOpenList.Pop()
-		node.Closed = true
-
-		walkedMap[core.NodeGroupStr(node.X, node.Y)] = node
-
-		// get neigbours of the current node
-		neighbors = grid.GetNeighbors(node.TNode, diagonalMovement)
-		for i := 0; i < len(neighbors); i++ {
-			if checkNodeParentSame(node.TNode, neighbors[i]) {
-				continue
-			}
-
 			walkedNode := walkedMap[core.NodeGroupStr(neighbors[i].X, neighbors[i].Y)]
-			neighbor := &core.AStarGrid{
-				TNode:  neighbors[i],
-				F:      0.0,
-				G:      0.0,
-				H:      0,
-				Opened: false,
-				Closed: false,
-			}
-
 			if walkedNode != nil {
 				neighbor = walkedNode
 			}
 
-			if neighbor.Openedflag == BY_START {
+			if neighbor.Openedflag == endflag {
 				return sortPathOrder(node.TNode, neighbor.TNode)
 			}
 
@@ -242,16 +197,32 @@ func (this *BiAStarFinder) FindPath(startX, startY, endX, endY int, grid *core.T
 				}
 
 				if neighbor.Openedflag == 0 {
-					endOpenList.Push(neighbor)
-					neighbor.Openedflag = BY_END
+					list.Push(neighbor)
+					neighbor.Openedflag = openflag
 				} else {
 					// the neighbor can be reached with smaller cost.
 					// Since its f value has been updated, we have to
 					// update its position in the open list
-					endOpenList.UpdateItem(neighbor)
+					list.UpdateItem(neighbor)
 				}
 			}
 		} // end for each neighbor
+		// fail to find the path
+		return core.DoubleInt32{}
+	}
+
+	// while both the open lists are not empty
+	for !startOpenList.Empty() && !endOpenList.Empty() {
+
+		startRet := getPathNodes(startOpenList, BY_END, BY_START)
+		if len(startRet) != 0 {
+			return startRet
+		}
+
+		endRet := getPathNodes(endOpenList, BY_START, BY_END)
+		if len(endRet) != 0 {
+			return endRet
+		}
 	} // end while not open list empty
 
 	// fail to find the path

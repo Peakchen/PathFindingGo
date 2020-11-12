@@ -18,7 +18,7 @@ func TestBiAStarFinder(t *testing.T) {
 		opt := &core.Opt{
 			AllowDiagonal:    false,
 			DontCrossCorners: false,
-			DiagonalMovement: core.Never, //Always,Never
+			DiagonalMovement: core.Never, //only for Always,Never
 			Heuristic:        nil,
 			Weight:           0,
 		}
